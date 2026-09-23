@@ -24,6 +24,16 @@ public static class CheckExt
         return result;
     }
 
+    public static async Task<IResult<T>> Check<T, K>(this IResult<T> result, Func<T, Task<IResult<K>>> func)
+    {
+        if (result.IsSuccess)
+        {
+            return (await func(result.Value)).Map(_ => result.Value);
+        }
+
+        return result;
+    }
+
     #endregion
 
     #region [ UnitResult<E> ]
@@ -33,6 +43,25 @@ public static class CheckExt
         if (result.IsSuccess)
         {
             return func();
+        }
+        return result;
+    }
+
+    public static async Task<IUnitResult<E>> Check<E>(this IUnitResult<E> result, Func<Task<IUnitResult<E>>> func)
+    {
+        if (result.IsSuccess)
+        {
+            return await func();
+        }
+        return result;
+    }
+
+    public static async Task<IUnitResult<E>> Check<E>(this Task<IUnitResult<E>> taskResult, Func<Task<IUnitResult<E>>> func)
+    {
+        IUnitResult<E> result = await taskResult;
+        if (result.IsSuccess)
+        {
+            return await func();
         }
         return result;
     }
