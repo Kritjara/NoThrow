@@ -42,14 +42,19 @@ public class UnitResult<E> : IUnitResult<E>
         IsSuccess = isSuccess;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IUnitResult{E}.Error"/>
     public E? Error{ get; }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IUnitResult{E}.IsSuccess"/>
     [MemberNotNullWhen(false, nameof(Error))]
     public bool IsSuccess { get; }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IUnitResult{E}.IsFailure"/>
     [MemberNotNullWhen(true, nameof(Error))]
     public bool IsFailure => !IsSuccess;
+
+    public static implicit operator UnitResult<E>(E error)
+    {
+        return UnitResult.Failure(error);
+    }
 }

@@ -45,15 +45,21 @@ public class Result<T> : IResult<T>
     }
 
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IResult{T}.Value"/>
     public T? Value { get; }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IResult{T}.IsSuccess"/>
     [MemberNotNullWhen(true, nameof(Value))]
     public bool IsSuccess { get; }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IResult{T}.IsFailure"/>
     [MemberNotNullWhen(false, nameof(Value))]
     public bool IsFailure => !IsSuccess;
+
+    public static implicit operator Result<T>(T value)
+    {
+        return Result.Success(value);
+    }
+
 }
 

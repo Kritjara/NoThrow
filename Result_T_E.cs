@@ -67,19 +67,44 @@ public class Result<T, E> : IResult<T, E>
         IsSuccess = false;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IResult{T,E}.Value"/>
     public T? Value { get; }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IResult{T,E}.Error"/>
     public E? Error { get; }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IResult{T,E}.IsSuccess"/>
     [MemberNotNullWhen(true, nameof(Value))]
     [MemberNotNullWhen(false, nameof(Error))]
     public bool IsSuccess { get; }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IResult{T,E}.IsFailure"/>
     [MemberNotNullWhen(false, nameof(Value))]
     [MemberNotNullWhen(true, nameof(Error))]
     public bool IsFailure => !IsSuccess;
+
+    public static implicit operator Result<T, E>(T value)
+    {
+        return Result.Success<T, E>(value);
+    }
+    public static implicit operator Result<T, E>(E error)
+    {
+        return Result.Failure<T, E>(error);
+    }
+
+    public static implicit operator Result<T>(Result<T, E> result)
+    {
+        if (result.IsSuccess)
+            return Result.Success(result.Value);
+        else
+            return Result.Failure<T>();
+    }
+
+    public static implicit operator UnitResult<E>(Result<T, E> result)
+    {
+        if (result.IsSuccess)
+            return UnitResult.Success<E>();
+        else
+            return UnitResult.Failure(result.Error);
+    }
 }
